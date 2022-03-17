@@ -127,8 +127,10 @@ let
 
         InsertedCurrentDate = Table.AddColumn(InsertedIsWorkedDay, "CurrentDate", each DateTime.Date(DateTime.LocalNow()), type date),
         InsertedYearOfPreviousMonth = Table.AddColumn(InsertedCurrentDate, "YearOfPreviousMonth", each if Date.Month([CurrentDate]) = 1 then Date.Year([CurrentDate]) - 1 else Date.Year([CurrentDate]), type number),
+        InsertedMonthOfPreviousDay = Table.AddColumn(InsertedYearOfPreviousMonth, "MonthOfPreviousDay", each if Date.Day([CurrentDate]) = 1 then (if Date.Month([CurrentDate]) = 1 then 12 else Date.Month([CurrentDate]) - 1) else Date.Month([CurrentDate]), type number),
+        InsertedYearOfPreviousDay = Table.AddColumn(InsertedMonthOfPreviousDay, "YearOfPreviousDay", each if Date.Day([CurrentDate]) = 1 and Date.Month([CurrentDate]) = 1 then Date.Year([CurrentDate]) - 1 else Date.Year([CurrentDate]), type number),
         
-        InsertedIsCurrentYear = Table.AddColumn(InsertedYearOfPreviousMonth, "IsCurrentYear", each if Date.IsInCurrentYear([Date]) then true else false, type logical),
+        InsertedIsCurrentYear = Table.AddColumn(InsertedYearOfPreviousDay, "IsCurrentYear", each if Date.IsInCurrentYear([Date]) then true else false, type logical),
         InsertedIsCurrentQuarter = Table.AddColumn(InsertedIsCurrentYear, "IsCurrentQuarter", each if Date.IsInCurrentQuarter([Date]) then true else false, type logical),
         InsertedIsCurrentMonth = Table.AddColumn(InsertedIsCurrentQuarter, "IsCurrentMonth", each if Date.IsInCurrentMonth([Date]) then true else false, type logical),
         InsertedIsCurrentWeek = Table.AddColumn(InsertedIsCurrentMonth, "IsCurrentWeek", each if Date.IsInCurrentWeek([Date]) then true else false, type logical),
@@ -144,9 +146,11 @@ let
         InsertedIsPreviousWeek = Table.AddColumn(InsertedIsPreviousMonth, "IsPreviousWeek", each if Date.IsInPreviousWeek([Date]) then true else false, type logical),
         InsertedIsPreviousDay = Table.AddColumn(InsertedIsPreviousWeek, "IsPreviousDay", each if Date.IsInPreviousDay([Date]) then true else false, type logical),
         InsertedIsCurrentOrPreviousYear = Table.AddColumn(InsertedIsPreviousDay, "IsCurrentOrPreviousYear", each if Date.IsInCurrentYear([Date]) or Date.IsInPreviousYear([Date]) then true else false, type logical),
-        InsertedIsYearOfPreviousMonth = Table.AddColumn(InsertedIsCurrentOrPreviousYear, "IsYearOfPreviousMonth", each if Date.Year([Date]) = [YearOfPreviousMonth] then true else false, type logical),
+        InsertedIsCurrentOrPreviousMonth = Table.AddColumn(InsertedIsCurrentOrPreviousYear, "IsCurrentOrPreviousMonth", each if Date.IsInCurrentMonth([Date]) or Date.IsInPreviousMonth([Date]) then true else false, type logical),
+        InsertedIsYearOfPreviousMonth = Table.AddColumn(InsertedIsCurrentOrPreviousMonth, "IsYearOfPreviousMonth", each if Date.Year([Date]) = [YearOfPreviousMonth] then true else false, type logical),
+        InsertedIsMonthOfPreviousDay = Table.AddColumn(InsertedIsYearOfPreviousMonth, "IsMonthOfPreviousDay", each if Date.Year([Date]) = [YearOfPreviousDay] and Date.Month([Date]) = [MonthOfPreviousDay] then true else false, type logical),
     
-        RemovedWorkColums = Table.RemoveColumns(InsertedIsYearOfPreviousMonth,{"HolidayDate", "CurrentDate", "YearOfPreviousMonth"})
+        RemovedWorkColums = Table.RemoveColumns(InsertedIsMonthOfPreviousDay,{"HolidayDate", "CurrentDate", "YearOfPreviousMonth", "MonthOfPreviousDay", "YearOfPreviousDay"})
     in
         RemovedWorkColums
 in
@@ -167,8 +171,8 @@ let
         {"IsWorkedDay", "EstTravaille"}, {"WeekNumber", "Semaine"}, {"WeekCode", "CodeSemaine"}, {"IsCurrentYear", "AnneeCourante"}, {"IsCurrentQuarter", "TrimestreCourant"}, {"IsCurrentMonth", "MoisCourant"}, {"IsCurrentWeek", "SemaineCourante"},
         {"IsCurrentDay", "JourCourant"}, {"IsNextYear", "AnneeSuivante"}, {"IsNextQuarter", "TrimestreSuivant"}, {"IsNextMonth", "MoisSuivant"}, {"IsNextWeek", "SemaineSuivante"}, {"IsNextDay", "JourSuivant"}, {"IsPreviousYear", "AnneePrecedente"},
         {"IsPreviousQuarter", "TrimestrePrecedent"}, {"IsPreviousMonth", "MoisPrecedent"}, {"IsPreviousWeek", "SemainePrecedente"}, {"IsPreviousDay", "JourPrecedent"}, {"IsCurrentOrPreviousYear", "AnneeCouranteOuPrecedente"},
-        {"IsYearOfPreviousMonth", "AnneeDuMoisPrecedent"}}),
-    SortedByDate = Table.Sort(RenamedColumns,{{"Date", Order.Descending}})
+        {"IsCurrentOrPreviousMonth", "MoisCourantOuPrecedent"}, {"IsYearOfPreviousMonth", "AnneeDuMoisPrecedent"}, {"IsMonthOfPreviousDay", "MoisDuJourPrecedent"}}),
+    SortedByDate = Table.Buffer(Table.Sort(RenamedColumns,{{"Date", Order.Descending}}))
 in
     SortedByDate
 ```
@@ -178,7 +182,6 @@ in
 ## Year-Month text
 
 The **AnneeMoisTexte** measure displays the name of the month and the year (the beginning of the selected period).
-
 
  ``` DAX
 CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Annee]))
