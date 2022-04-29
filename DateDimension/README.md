@@ -114,7 +114,8 @@ let
         InsertedDayOfWeekName = Table.AddColumn(InsertedWeekCode, "DayOfWeekName", each Date.ToText([Date], "dddd", Culture), type text),
         InsertedStartOfMonth = Table.AddColumn(InsertedDayOfWeekName, "StartOfMonth",  each Date.StartOfMonth([Date]), type date),
         InsertedEndOfMonth = Table.AddColumn(InsertedStartOfMonth, "EndOfMonth",  each Date.EndOfMonth([Date]), type date),
-        InsertedWeekEnding = Table.AddColumn(InsertedEndOfMonth, "WeekEnding", each Date.EndOfWeek([Date]), type date),
+        InsertedWeekStarting = Table.AddColumn(InsertedEndOfMonth, "WeekStarting", each Date.StartOfWeek([Date]), type date),
+        InsertedWeekEnding = Table.AddColumn(InsertedWeekStarting, "WeekEnding", each Date.EndOfWeek([Date]), type date),
         
         BuiltYearsTable = Table.Distinct(Table.Buffer(Table.SelectColumns(InsertedYear, {"Year"}))),
         BuiltBaseHolidaysTable = Table.AddColumn(BuiltYearsTable, "Holidays", each GetHolidays([Year])),
@@ -167,10 +168,10 @@ in
 let
     Source = BuildCalendar(#date(Date.Year(DateTime.LocalNow()) - YearsToKeep, 1, 1), #date(Date.Year(DateTime.LocalNow()) + 1, 1, 1), "fr"),
     RenamedColumns = Table.RenameColumns(Source,{{"Year", "Annee"}, {"QuarterOfYear", "Trimestre"}, {"MonthOfYear", "Mois"}, {"DayOfMonth", "Jour"}, {"MonthName", "NomMois"}, {"MonthNameAndCode", "NomCodeMois"}, {"DayOfWeekName", "NomJour"},
-        {"DayOfWeek", "NumeroJourSemaine"}, {"WeekEnding", "FinSemaine"}, {"MonthCode", "AnneeMois"}, {"QuarterCode", "CodeTrimestre"}, {"StartOfMonth", "DateDebutMois"}, {"EndOfMonth", "DateFinMois"}, {"IsHoliday", "EstFerie"}, {"HolidayName", "NomJourFerie"},
-        {"IsWorkedDay", "EstTravaille"}, {"WeekNumber", "Semaine"}, {"WeekCode", "CodeSemaine"}, {"IsCurrentYear", "AnneeCourante"}, {"IsCurrentQuarter", "TrimestreCourant"}, {"IsCurrentMonth", "MoisCourant"}, {"IsCurrentWeek", "SemaineCourante"},
-        {"IsCurrentDay", "JourCourant"}, {"IsNextYear", "AnneeSuivante"}, {"IsNextQuarter", "TrimestreSuivant"}, {"IsNextMonth", "MoisSuivant"}, {"IsNextWeek", "SemaineSuivante"}, {"IsNextDay", "JourSuivant"}, {"IsPreviousYear", "AnneePrecedente"},
-        {"IsPreviousQuarter", "TrimestrePrecedent"}, {"IsPreviousMonth", "MoisPrecedent"}, {"IsPreviousWeek", "SemainePrecedente"}, {"IsPreviousDay", "JourPrecedent"}, {"IsCurrentOrPreviousYear", "AnneeCouranteOuPrecedente"},
+        {"DayOfWeek", "NumeroJourSemaine"}, {"WeekStarting", "DebutSemaine"}, {"WeekEnding", "FinSemaine"}, {"MonthCode", "AnneeMois"}, {"QuarterCode", "CodeTrimestre"}, {"StartOfMonth", "DateDebutMois"}, {"EndOfMonth", "DateFinMois"}, {"IsHoliday", "EstFerie"},
+        {"HolidayName", "NomJourFerie"}, {"IsWorkedDay", "EstTravaille"}, {"WeekNumber", "Semaine"}, {"WeekCode", "CodeSemaine"}, {"IsCurrentYear", "AnneeCourante"}, {"IsCurrentQuarter", "TrimestreCourant"}, {"IsCurrentMonth", "MoisCourant"},
+        {"IsCurrentWeek", "SemaineCourante"}, {"IsCurrentDay", "JourCourant"}, {"IsNextYear", "AnneeSuivante"}, {"IsNextQuarter", "TrimestreSuivant"}, {"IsNextMonth", "MoisSuivant"}, {"IsNextWeek", "SemaineSuivante"}, {"IsNextDay", "JourSuivant"},
+        {"IsPreviousYear", "AnneePrecedente"}, {"IsPreviousQuarter", "TrimestrePrecedent"}, {"IsPreviousMonth", "MoisPrecedent"}, {"IsPreviousWeek", "SemainePrecedente"}, {"IsPreviousDay", "JourPrecedent"}, {"IsCurrentOrPreviousYear", "AnneeCouranteOuPrecedente"},
         {"IsCurrentOrPreviousMonth", "MoisCourantOuPrecedent"}, {"IsYearOfPreviousMonth", "AnneeDuMoisPrecedent"}, {"IsMonthOfPreviousDay", "MoisDuJourPrecedent"}}),
     SortedByDate = Table.Buffer(Table.Sort(RenamedColumns,{{"Date", Order.Descending}}))
 in
