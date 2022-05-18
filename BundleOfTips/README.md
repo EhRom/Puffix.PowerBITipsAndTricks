@@ -16,7 +16,7 @@ When multiple criteria must be evaluated for each row, the keyword `and`, `or` o
 
 ## Remove duplicates in Power Query
 
-A proper *remove duplicates* implementation in Power Query requires 3 steps:
+A proper *remove duplicates* implementation in Power Query requires 4 steps:
 - First: make sure that you have removed any columns from the dataset that might make a row unique (e.g. an identifier, a date) that should be considered a duplicate,
 - Second: sort the data  according to required criteria,
 - Third: **buffer the entire table**. Otherwise, the third step could lead to undesirable and inaccurate results,
@@ -30,6 +30,30 @@ A proper *remove duplicates* implementation in Power Query requires 3 steps:
     RemovedDuplicates = Table.Distinct(BufferedTable),
     ...
 ```
+
+## Agregation in Power Query
+
+A proper *agregation* implementation in Power Query, like *remove duplicates* implementation, requires 4 steps:
+- First: make sure that you have removed any columns from the dataset that might make a row unique (e.g. an identifier, a date) that should be considered a duplicate,
+- Second: sort the data  according to required criteria,
+- Third: **buffer the entire table**. Otherwise, the third step could lead to undesirable and inaccurate results,
+- Fourth: group the rows and calculate.
+
+``` powerquery
+    ...
+    RemovedColums = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
+    SortedRow = Table.Sort(RemovedColums,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
+    BufferedTable = Table.Buffer(SortedRow),
+    GroupedRows = Table.GroupBy(BufferedTable, {"GroupByCriterionField1", "GroupByCriterionField2"},
+        {
+            {"GroupedField1", each List.Sum([FieldToSum]), type nullable number},
+            {"GroupedField2", each List.Min([MinField]), type nullable number},
+            {"GroupedField3", each List.Count([FieldToCount]), type nullable number}
+        }),
+    ...
+```
+
+> [*List* functions](https://docs.microsoft.com/en-us/powerquery-m/list-functions)
 
 ## Join Tables
 
