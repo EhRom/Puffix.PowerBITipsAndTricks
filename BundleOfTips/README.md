@@ -44,7 +44,7 @@ A proper *agregation* implementation in Power Query, like *remove duplicates* im
     RemovedColums = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
     SortedRow = Table.Sort(RemovedColums,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
     BufferedTable = Table.Buffer(SortedRow),
-    GroupedRows = Table.GroupBy(BufferedTable, {"GroupByCriterionField1", "GroupByCriterionField2"},
+    GroupedRows = Table.Group(BufferedTable, {"GroupByCriterionField1", "GroupByCriterionField2"},
         {
             {"GroupedField1", each List.Sum([FieldToSum]), type nullable number},
             {"GroupedField2", each List.Min([MinField]), type nullable number},
