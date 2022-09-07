@@ -81,7 +81,7 @@ Joining two tables in Power Query is done in two steps:
 ``` powerquery
     ...
     MergedQueries = Table.NestedJoin(PreviousStep, {"Column1InSource", "Column2InSource"}, TargetTable, {"Column1InTarget", "Column2InTarget"}, "TargetAlias", JoinKind.Inner),
-    ExpandFields = Table.ExpandTableColumn(MergedQueries, "TargetAlias", {"Column1InTarget", "Column2InTarget"}, {"Column1NameInFinalDataset", "Column2NameInFinalDataset"}),
+    ExpandedFields = Table.ExpandTableColumn(MergedQueries, "TargetAlias", {"Column1InTarget", "Column2InTarget"}, {"Column1NameInFinalDataset", "Column2NameInFinalDataset"}),
     ...
 ```
 
