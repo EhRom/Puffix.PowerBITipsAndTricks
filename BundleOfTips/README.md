@@ -24,8 +24,8 @@ A proper *remove duplicates* implementation in Power Query requires 4 steps:
 
 ``` powerquery
     ...
-    RemovedColums = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
-    SortedRow = Table.Sort(RemovedColums,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
+    RemovedColumns = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
+    SortedRow = Table.Sort(RemovedColumns,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
     BufferedTable = Table.Buffer(SortedRow),
     RemovedDuplicates = Table.Distinct(BufferedTable),
     ...
@@ -41,8 +41,8 @@ A proper *agregation* implementation in Power Query, like *remove duplicates* im
 
 ``` powerquery
     ...
-    RemovedColums = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
-    SortedRow = Table.Sort(RemovedColums,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
+    RemovedColumns = Table.RemoveColumns(PreviousStep,{"Column1", "Column2"}),
+    SortedRow = Table.Sort(RemovedColumns,{{"Criterion1", Order.Ascending}, {"Criterion2", Order.Descending}}),
     BufferedTable = Table.Buffer(SortedRow),
     GroupedRows = Table.Group(BufferedTable, {"GroupByCriterionField1", "GroupByCriterionField2"},
         {
