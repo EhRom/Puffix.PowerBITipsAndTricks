@@ -90,6 +90,50 @@ It is a list of **text** values:
 
 The function **BuildCalendar** is used to generate the calendar. The definition of the function is available below. The following fieds are calculated:
 
+|Field|Description|Data Type|
+|---|---|---|
+|**Date**|Date / *current date*.|Date|
+|**Year**|Year of the date.|Number|
+|**QuarterOfYear**|Quarter of the date.|Number|
+|**MonthOfYear**|Month number of the date.|Number|
+|**DayOfMonth**|Day of the month.|Number|
+|**MonthName**|Name of the month.|Text|
+|**MonthNameAndCode**|Month number and month name of the date (for ordering purpose).|Text|
+|**DayOfWeekName**|Name of the day in the week.|Text|
+|**DayOfWeek**|Day number of the week.|Number|
+|**WeekStarting**|Start date of the week corresponding to the current date.|Date|
+|**WeekEnding**|End date of the week corresponding to the current date.|Date|
+|**MonthCode**|Code of the month, including the year. E.g. 202311, for November 2023.|Text|
+|**QuarterCode**|Code of the quarter, including the year and the quarter character abbreviation (cf. the parameter defined above). E.g. 2023 Q3, for the third quarter of 2023.|Text|
+|**StartOfMonth**|Start date of the month corresponding to the current date.|Date|
+|**EndOfMonth**|End date of the month corresponding to the current date.|Date|
+|**IsHoliday**|Defines whether the current date is a public holiday.|Logical|
+|**HolidayName**|Name of the public holiday, if the current date is a public holiday.|Text|
+|**IsWorkedDay**|Defines whether the current date is a worked day.|Logical|
+|**WeekNumber**|(ISO) Week number of the date.|Number|
+|**WeekCode**|Code of the (ISO) week number, including the year and the week character abbreviation (cf. the parameter defined above). E.g. 2023 - W44, for the forty-fouth week of 2023.|Text|
+|**IsCurrentYear**|Defines whether the current date is in the current year.|Logical|
+|**IsCurrentQuarter**|Defines whether the current date is in the current quarter.|Logical|
+|**IsCurrentMonth**|Defines whether the current date is in the current month.|Logical|
+|**IsCurrentWeek**|Defines whether the current date is in the current week.|Logical|
+|**IsCurrentDay**|Defines whether the current date is today.|Logical|
+|**IsNextYear**|Defines whether the current date is in the next year.|Logical|
+|**IsNextQuarter**|Defines whether the current date is in the next quarter.|Logical|
+|**IsNextMonth**|Defines whether the current date is in the next month.|Logical|
+|**IsNextWeek**|Defines whether the current date is in the next week.|Logical|
+|**IsNextDay**|Defines whether the current date is tomorrow.|Logical|
+|**IsPreviousYear**|Defines whether the current date is in the last year.|Logical|
+|**IsPreviousQuarter**|Defines whether the current date is in the last quarter.|Logical|
+|**IsPreviousMonth**|Defines whether the current date is in the last month.|Logical|
+|**IsPreviousWeek**|Defines whether the current date is in the last week.|Logical|
+|**IsPreviousDay**|Defines whether the current date isyesterday.|Logical|
+|**IsCurrentOrPreviousYear**|Defines whether the current date is in the current or last year.|Logical|
+|**IsCurrentOrPreviousMonth**|Defines whether the current date is in the current or last month.|Logical|
+|**IsYearOfPreviousMonth**|Defines whether the current date is in the same year of the previous month.|Logical|
+|**IsMonthOfPreviousDay**|Defines whether the current date is in the same month as yesterday.|Logical|
+
+Query definition:
+
 ``` powerquery
 let
     Calendar = (StartDate as date, EndDate as date, optional Culture as nullable text) as table =>
