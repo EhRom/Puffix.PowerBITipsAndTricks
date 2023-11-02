@@ -89,7 +89,6 @@ It is a list of **text** values:
 - T (*trimestre*) for French language
 
 The function **BuildCalendar** is used to generate the calendar. The definition of the function is available below. The following fieds are calculated:
-- 
 
 ``` powerquery
 let
