@@ -201,8 +201,6 @@ in
     Calendar
 ```
 
-![Result in Power Query](./Resources/001-PowerQueryResult.png)
-
 ## Table Calendar
 
 **YearsToKeep** of type Decimal Number: 5
@@ -220,6 +218,8 @@ let
 in
     SortedByDate
 ```
+
+![Result in Power Query](./Resources/001-PowerQueryResult.png)
 
 # Quick measures (DAX) to display the selected date
 
