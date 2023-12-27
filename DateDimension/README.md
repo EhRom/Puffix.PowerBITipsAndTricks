@@ -242,6 +242,12 @@ in
 
 ![Result in Power Query](./Resources/001-PowerQueryResult.png)
 
+# Sort month name by month number
+
+By default, in visualizations, Power BI sorts the month alphabetically. To sort month names in chronological order, go to the *Model View* in Power BI, select the `Month` (or `Mois` in French) field. In the *Advanced* section in the *Properties* pan, select `MonthOfYear` (or `NumeroMois` in French) in the *Sort by column* dropdown menu.
+
+![Sort Month Name By Month Number](./Resources/002-SortMonthNameByMonthNumber.png)
+
 # Quick measures (DAX) to display the selected date
 
 ## Year-Month text
@@ -274,7 +280,7 @@ var maxDateText = CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Anne
 return minDateText & " - " & maxDateText
 ```
 
-![Result in a report](./Resources/002-PowerBIResult.png)
+![Result in a report](./Resources/003-PowerBIResult.png)
 
 
 The file ***DateDimensionWithFrenchHolidays.pbix*** contains the solution.
