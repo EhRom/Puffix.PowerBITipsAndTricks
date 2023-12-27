@@ -242,11 +242,13 @@ in
 
 ![Result in Power Query](./Resources/001-PowerQueryResult.png)
 
-# Sort month name by month number
+# Sort month name by month number and other modeling changes
 
 By default, in visualizations, Power BI sorts the month alphabetically. To sort month names in chronological order, go to the *Model View* in Power BI, select the `Month` (or `Mois` in French) field. In the *Advanced* section in the *Properties* pan, select `MonthOfYear` (or `NumeroMois` in French) in the *Sort by column* dropdown menu.
 
 ![Sort Month Name By Month Number](./Resources/002-SortMonthNameByMonthNumber.png)
+
+For each numeric value in the `Calendar` table, ensure that the default summarization is set to `None`.
 
 # Quick measures (DAX) to display the selected date
 
@@ -255,38 +257,73 @@ By default, in visualizations, Power BI sorts the month alphabetically. To sort 
 The **AnneeMoisTexte** measure displays the name of the month and the year (the beginning of the selected period).
 
  ``` DAX
-CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]))
+AnneeMoisTexte = 
+
+VAR minDate = MIN(Calendrier[Date])
+
+VAR minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
+
+RETURN minDateText
 ```
 
-> In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
+## Current Year-Month text
+
+The **AnneeMoisCourantTexte** measure displays the name of the month and the year of the past month.
+
+ ``` DAX
+AnneeMoisCourantTexte = 
+
+VAR minDate = DATE(YEAR(TODAY()), MONTH(TODAY()), 1)
+
+VAR minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
+
+RETURN minDateText
+```
 
 ## Past Year-Month text
 
 The **AnneeMoisRevoluTexte** measure displays the name of the month and the year of the past month.
 
  ``` DAX
-CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(Calendrier, Calendrier[Date] < DATE(YEAR(TODAY()), MONTH(TODAY()), 1)))
-```
+AnneeMoisRevoluTexte =
 
-> In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
+VAR previousMonthMinDate = IF(MONTH(TODAY()) = 1,
+    DATE(YEAR(TODAY()) - 1, 12, 1),
+    DATE(YEAR(TODAY()), MONTH(TODAY()) - 1, 1)
+)
+
+VAR minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = previousMonthMinDate))
+
+RETURN minDateText
+```
 
 ### Period text
 
 The **PeriodeTexte** measure displays the name of the month and the year of the beginning of the selected period and the name of the month and the year of the end of the selected period.
 
  ``` DAX
-var minDate = MIN(Calendrier[Date])
-var maxDate = MAX(Calendrier[Date])
+PeriodeTexte =
 
-var minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
-var maxDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]) , FILTER(ALL(Calendrier), Calendrier[Date] = maxDate))
+VAR minDate = MIN(Calendrier[Date])
+VAR maxDate = MAX(Calendrier[Date])
 
-return minDateText & " - " & maxDateText
+VAR minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
+VAR maxDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]) , FILTER(ALL(Calendrier), Calendrier[Date] = maxDate))
+
+RETURN minDateText & " - " & maxDateText 
 ```
 
 > In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
 
-![Result in a report](./Resources/003-PowerBIResult.png)
+## Final result
+
+![Result in a report - Calendar](./Resources/003-PowerBIResult-Calendar.png)
+
+![Result in a report - Date card](./Resources/004-PowerBIResult-DateCard.png)
+
+![Result in a report - Calendar with a relative slicer](./Resources/005-PowerBIResult-CalendarRelativeSlicer.png)
+
+![Result in a report - Date chart](./Resources/006-PowerBIResult-DateChart.png)
 
 The file ***DateDimensionWithFrenchHolidays.pbix*** contains the solution.
 
