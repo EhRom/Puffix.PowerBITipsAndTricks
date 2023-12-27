@@ -111,8 +111,8 @@ The function **BuildCalendar** is used to generate the calendar. The definition 
 |**QuarterOfYear**|Quarter of the date.|Number|
 |**MonthOfYear**|Month number of the date.|Number|
 |**DayOfMonth**|Day of the month.|Number|
-|**MonthName**|Name of the month.|Text|
-|**MonthNameAndCode**|Month number and month name of the date (for ordering purpose).|Text|
+|**Month**|Name of the month.|Text|
+|**MonthNumberAndName**|Month number and month name of the date (for ordering purpose).|Text|
 |**DayOfWeekName**|Name of the day in the week.|Text|
 |**DayOfWeek**|Day number of the week.|Number|
 |**WeekStarting**|Start date of the week corresponding to the current date.|Date|
@@ -159,14 +159,14 @@ let
         RenamedColumns = Table.RenameColumns(ChangedType,{{"Column1", "Date"}}),
         InsertedYear = Table.AddColumn(RenamedColumns, "Year", each Date.Year([Date]), Int64.Type),
         InsertedQuarter = Table.AddColumn(InsertedYear, "QuarterOfYear", each Date.QuarterOfYear([Date]), Int64.Type),
-        InsertedMonth = Table.AddColumn(InsertedQuarter, "MonthOfYear", each Date.Month([Date]), Int64.Type),
-        InsertedISOWeekNumber = Table.AddColumn(InsertedMonth, "WeekNumber", each GetISOWeekNumber([Date]), Int64.Type),
+        InsertedMonthOfYear = Table.AddColumn(InsertedQuarter, "MonthOfYear", each Date.Month([Date]), Int64.Type),
+        InsertedISOWeekNumber = Table.AddColumn(InsertedMonthOfYear, "WeekNumber", each GetISOWeekNumber([Date]), Int64.Type),
         InsertedDay = Table.AddColumn(InsertedISOWeekNumber, "DayOfMonth", each Date.Day([Date]), Int64.Type),
         InsertedDayWeek = Table.AddColumn(InsertedDay, "DayOfWeek", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
         InsertedQuarterCode = Table.AddColumn(InsertedDayWeek, "QuarterCode",  each Number.ToText([Year]) & " " & QuarterAbbrevation & Number.ToText([QuarterOfYear]), type text),
-        InsertedMonthName = Table.AddColumn(InsertedQuarterCode, "MonthName", each Date.ToText([Date], "MMMM", Culture), type text),
-        InsertedMonthNameAndCode = Table.AddColumn(InsertedMonthName, "MonthNameAndCode", each (if Text.Length(Text.From(Date.Month([Date]))) = 1 then "0" else "") & Text.From(Date.Month([Date])) & " - " & Date.ToText([Date], "MMMM", Culture), type text),
-        InsertedMonthCode = Table.AddColumn(InsertedMonthNameAndCode, "MonthCode", each Text.From([Year] * 100 + [MonthOfYear]), type text),
+        InsertedMonth = Table.AddColumn(InsertedQuarterCode, "Month", each Date.ToText([Date], "MMMM", Culture), type text),
+        InsertedMonthNumberAndName = Table.AddColumn(InsertedMonth, "MonthNumberAndName", each (if Text.Length(Text.From(Date.Month([Date]))) = 1 then "0" else "") & Text.From(Date.Month([Date])) & " - " & Date.ToText([Date], "MMMM", Culture), type text),
+        InsertedMonthCode = Table.AddColumn(InsertedMonthNumberAndName, "MonthCode", each Text.From([Year] * 100 + [MonthOfYear]), type text),
         InsertedWeekCode = Table.AddColumn(InsertedMonthCode, "WeekCode",  each GetISOWeekNumberWithYear([Date]), type text),
         InsertedDayOfWeekName = Table.AddColumn(InsertedWeekCode, "DayOfWeekName", each Date.ToText([Date], "dddd", Culture), type text),
         InsertedStartOfMonth = Table.AddColumn(InsertedDayOfWeekName, "StartOfMonth",  each Date.StartOfMonth([Date]), type date),
@@ -215,14 +215,21 @@ in
     Calendar
 ```
 
-## Table Calendar
+## **YearsToKeep** parameter
+
 
 **YearsToKeep** of type Decimal Number: 5
+
+## **Calendar** table
+
+**Calendar** table definition (create a blank query and paste the code below).
+
+The code below builds the calendar based on the *YearsToKeep* parameters (from the first day of the current year minus *YearsToKeep*, and the last day of the current year), translates the columns headers in French.
 
 ``` powerquery
 let
     Source = BuildCalendar(#date(Date.Year(DateTime.LocalNow()) - YearsToKeep, 1, 1), #date(Date.Year(DateTime.LocalNow()) + 1, 1, 1), "fr"),
-    RenamedColumns = Table.RenameColumns(Source,{{"Year", "Annee"}, {"QuarterOfYear", "Trimestre"}, {"MonthOfYear", "Mois"}, {"DayOfMonth", "Jour"}, {"MonthName", "NomMois"}, {"MonthNameAndCode", "NomCodeMois"}, {"DayOfWeekName", "NomJour"},
+    RenamedColumns = Table.RenameColumns(Source,{{"Year", "Annee"}, {"QuarterOfYear", "Trimestre"}, {"MonthOfYear", "NumeroMois"}, {"DayOfMonth", "Jour"}, {"Month", "Mois"}, {"MonthNumberAndName", "NumeroEtNomMois"}, {"DayOfWeekName", "NomJour"},
         {"DayOfWeek", "NumeroJourSemaine"}, {"WeekStarting", "DebutSemaine"}, {"WeekEnding", "FinSemaine"}, {"MonthCode", "AnneeMois"}, {"QuarterCode", "CodeTrimestre"}, {"StartOfMonth", "DateDebutMois"}, {"EndOfMonth", "DateFinMois"}, {"IsHoliday", "EstFerie"},
         {"HolidayName", "NomJourFerie"}, {"IsWorkedDay", "EstTravaille"}, {"WeekNumber", "Semaine"}, {"WeekCode", "CodeSemaine"}, {"IsCurrentYear", "AnneeCourante"}, {"IsCurrentQuarter", "TrimestreCourant"}, {"IsCurrentMonth", "MoisCourant"},
         {"IsCurrentWeek", "SemaineCourante"}, {"IsCurrentDay", "JourCourant"}, {"IsNextYear", "AnneeSuivante"}, {"IsNextQuarter", "TrimestreSuivant"}, {"IsNextMonth", "MoisSuivant"}, {"IsNextWeek", "SemaineSuivante"}, {"IsNextDay", "JourSuivant"},
