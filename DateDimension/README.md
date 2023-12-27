@@ -9,6 +9,8 @@ The french holidays are also included, using an open dataset provided the French
 
 # ISO Week Number
 
+## **GetISOWeekNumber** function
+
 The ISO week numbers (definition on [Wikipedia](https://en.wikipedia.org/wiki/ISO_week_date#Calculating_the_week_number_of_a_given_date)) are calculated with a function defined in M language (Power Query) and named **GetISOWeekNumber**:
 
 ``` powerquery
@@ -29,6 +31,17 @@ in
 
 > Source : [How to calculate ISO week number in Power Query](https://datacornering.com/how-to-calculate-iso-week-number-in-power-query/)
 
+## **WeekAbbrevation** parameter
+
+To handle culture, a parameter is required **WeekAbbrevation**, and defined as follow:
+It is a list of **text** values:
+- W (*week*) for English language,
+- S (*semaine*) for French language
+
+> Source : [How to calculate ISO year in Power Query](https://datacornering.com/how-to-calculate-iso-year-in-power-query/)
+
+## **GetISOWeekNumberWithYear** function
+
 The ISO code week (concatenation of the ISO year and the ISO week number) is also calculated with a M function and named **GetISOWeekNumberWithYear**:
 
 ``` powerquery
@@ -44,22 +57,19 @@ in
     ISOWeekNumber
 ```
 
-To handle culture, a parameter is required **WeekAbbrevation**, and defined as follow:
-It is a list of **text** values:
-- W (*week*) for English language,
-- S (*semaine*) for French language
-
-> Source : [How to calculate ISO year in Power Query](https://datacornering.com/how-to-calculate-iso-year-in-power-query/)
-
 # Holidays
 
 The French holiday data are retrieved from the following open data [page / service](https://calendrier.api.gouv.fr/jours-feries/).
 
 The holidays are retrieved with a function named **GetHolidays**. The function takes the year as argument (or no argument to retrieve the French holidays from 2000 to 2025).
 
+## Paramters
+
 The function is based on two paramters:
 - **GetHolidayUri**, of type text > value: `https://calendrier.api.gouv.fr/jours-feries/`
 - **HolidayArea**, of type text > value: `metropole`
+
+## **GetHolidays** function
 
 **GetHolidays** function definition:
 
@@ -83,10 +93,14 @@ in
 
 # Calendar
 
+## Paramters
+
 To handle culture, a parameter is required **QuarterAbbrevation**, and defined as follow:
 It is a list of **text** values:
 - Q (*quarter*) for English language,
 - T (*trimestre*) for French language
+
+## **BuildCalendar** function
 
 The function **BuildCalendar** is used to generate the calendar. The definition of the function is available below. The following fieds are calculated:
 
