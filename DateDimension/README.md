@@ -255,16 +255,20 @@ By default, in visualizations, Power BI sorts the month alphabetically. To sort 
 The **AnneeMoisTexte** measure displays the name of the month and the year (the beginning of the selected period).
 
  ``` DAX
-CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Annee]))
+CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]))
 ```
+
+> In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
 
 ## Past Year-Month text
 
 The **AnneeMoisRevoluTexte** measure displays the name of the month and the year of the past month.
 
  ``` DAX
-CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Annee]), FILTER(Calendrier, Calendrier[Date] < DATE(YEAR(TODAY()), MONTH(TODAY()), 1)))
+CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(Calendrier, Calendrier[Date] < DATE(YEAR(TODAY()), MONTH(TODAY()), 1)))
 ```
+
+> In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
 
 ### Period text
 
@@ -274,13 +278,15 @@ The **PeriodeTexte** measure displays the name of the month and the year of the 
 var minDate = MIN(Calendrier[Date])
 var maxDate = MAX(Calendrier[Date])
 
-var minDateText = CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
-var maxDateText = CALCULATE(MIN(Calendrier[NomMois]) & " " & MIN(Calendrier[Annee]) , FILTER(ALL(Calendrier), Calendrier[Date] = maxDate))
+var minDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]), FILTER(ALL(Calendrier), Calendrier[Date] = minDate))
+var maxDateText = CALCULATE(MIN(Calendrier[Mois]) & " " & MIN(Calendrier[Annee]) , FILTER(ALL(Calendrier), Calendrier[Date] = maxDate))
 
 return minDateText & " - " & maxDateText
 ```
 
+> In this DAX formula, we assume that the `Month` (or `Mois` in French) column is sorted by the `MonthOfYear` (or `NumeroMois` in French) column.
+
 ![Result in a report](./Resources/003-PowerBIResult.png)
 
-
 The file ***DateDimensionWithFrenchHolidays.pbix*** contains the solution.
+
